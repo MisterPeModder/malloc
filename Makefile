@@ -24,7 +24,9 @@ MKDIR := mkdir -p
 PRINT := printf
 NORM := norminette
 
-SRCS_NAMES :=	main.c			\
+SRCS_NAMES :=		ft_free.c			\
+					ft_malloc.c			\
+					interface.c			\
 
 LIBFT_SRCS_NAMES :=	ft_memset.c			\
 					ft_bzero.c			\
@@ -96,8 +98,9 @@ SRCS := $(addprefix $(SRC_PATH)/,$(SRCS_NAMES))
 
 OBJS := $(addprefix $(OBJ_PATH)/,$(SRCS_NAMES:.c=.o))
 
-INCS :=			ft_malloc.h		\
-				libft.h			\
+INCS :=			ft_malloc.h			\
+INCS :=			ft_malloc_impl.h	\
+				libft.h				\
 
 DIRS := $(OBJ_PATH) $(OBJ_PATH)/libft
 
@@ -117,7 +120,7 @@ UNDERLINE := \033[4m
 all: $(LNK_NAME)
 
 $(LNK_NAME): $(NAME)
-	@ln -ns $(NAME) $(LNK_NAME)
+	@ln -ns $(NAME) $(LNK_NAME) 2> /dev/null || true
 	@$(PRINT) "$(GREEN)done!$(RESET)\n"
 
 $(NAME): $(DIRS) $(OBJS)
@@ -130,11 +133,11 @@ endif
 $(DIRS):
 	@$(MKDIR) $@
 
-$(OBJ_PATH)/%.o: $(SRC_PATH)/%.c $(addprefix $(INC_PATH)/,$(INCS))
+$(OBJ_PATH)/%.o: $(SRC_PATH)/%.c
 ifeq ($(DETAILED), 1)
 	@tput dl; tput el1; tput cub 100; $(PRINT) "$(GREY)Creating object files: $(RESET)$(notdir $@)"
 endif
-	@$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
+	@$(CC) -D _GNU_SOURCE $(CPPFLAGS) $(CFLAGS) -c $< -o $@
 
 clean:
 	@$(RM) $(NORM_LOG)

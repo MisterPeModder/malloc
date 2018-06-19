@@ -1,26 +1,36 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_malloc.h                                        :+:      :+:    :+:   */
+/*   interface.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: yguaye <yguaye@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/06/18 20:04:40 by yguaye            #+#    #+#             */
-/*   Updated: 2018/06/19 03:23:45 by yguaye           ###   ########.fr       */
+/*   Created: 2018/06/19 03:06:40 by yguaye            #+#    #+#             */
+/*   Updated: 2018/06/19 04:51:31 by yguaye           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef FT_MALLOC_H
-# define FT_MALLOC_H
+#include "ft_malloc.h"
+#include "ft_malloc_impl.h"
 
-#include <stddef.h>
+static t_meminfo		g_meminfo;
 
-void					free(void *ptr);
+void					free(void *ptr)
+{
+	ft_free(ptr, &g_meminfo);
+}
 
-void					*malloc(size_t size);
+void					*malloc(size_t size)
+{
+	return (ft_malloc(size, &g_meminfo));
+}
 
-void					*realloc(void *ptr, size_t size);
+void					*realloc(void *ptr, size_t size)
+{
+	return (ft_realloc(ptr, size, &g_meminfo));
+}
 
-void					*calloc(size_t nelems, size_t size);
-
-#endif
+void					*calloc(size_t nelems, size_t size)
+{
+	return (ft_calloc(nelems, size, &g_meminfo));
+}
