@@ -6,17 +6,35 @@
 /*   By: yguaye <yguaye@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/19 09:42:17 by yguaye            #+#    #+#             */
-/*   Updated: 2018/06/19 09:46:25 by yguaye           ###   ########.fr       */
+/*   Updated: 2018/06/19 18:47:49 by yguaye           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <stdlib.h>
+#include <unistd.h>
+#include "libft.h"
 #include "ft_malloc_impl.h"
 
+static void				realloc_check_addr(void *ptr, t_meminfo *info)
+{
+	if (!search_seg_adrr(ptr, info))
+	{
+		ft_putstr_fd("ft_malloc: *** error for object ", STDERR_FILENO);
+		print_addr(ptr, STDERR_FILENO);
+		ft_putendl_fd(": pointer being realloc'd was not allocated",
+				STDERR_FILENO);
+		abort();
+	}
+}
+
+/*TODO WIP*/
 void					*ft_realloc(void *ptr, size_t size,
 		t_meminfo *info)
 {
-	(void)ptr;
+	struct s_segment	*seg;
+
+	seg = (struct s_segment *)((char *)ptr - sizeof(struct s_segment));
+	realloc_check_addr(seg, info);
 	(void)size;
-	(void)info;
 	return (NULL);
 }

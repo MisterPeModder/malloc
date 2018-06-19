@@ -6,7 +6,7 @@
 /*   By: yguaye <yguaye@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/19 10:32:12 by yguaye            #+#    #+#             */
-/*   Updated: 2018/06/19 16:05:13 by yguaye           ###   ########.fr       */
+/*   Updated: 2018/06/19 19:31:08 by yguaye           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,4 +46,29 @@ size_t					align_size(size_t size)
 	page_size = (size_t)getpagesize();
 	size += sizeof(struct s_segment);
 	return (size - size % page_size + page_size);
+}
+
+int						search_seg_adrr(char *addr, t_meminfo *info)
+{
+	size_t				i;
+	struct s_segment	*curr;
+
+	i = 0;
+	while (i < info->curr)
+	{
+		if (addr >= (char *)info->blocks[i].pages &&
+				addr < ((char *)info->blocks[i].pages) + info->blocks[i].size)
+		{
+			curr = (struct s_segment *)info->blocks[i].pages;
+			while (curr)
+			{
+				if (curr == (void *)addr)
+					return (info->blocks[i].type != EMPTY_BLOCK);
+				curr = curr->next;
+			}
+			break ;
+		}
+		++i;
+	}
+	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: yguaye <yguaye@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/19 03:07:38 by yguaye            #+#    #+#             */
-/*   Updated: 2018/06/19 17:44:37 by yguaye           ###   ########.fr       */
+/*   Updated: 2018/06/19 19:30:43 by yguaye           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@
 **
 ** -size: the segment size (not including the s_segment struct itself).
 ** -block: which block this semgement is in.
+** -empty: tells wheter this block is empty.
 ** -prev: a pointer to the previous segment.
 ** -next: a pointer to the next segment.
 */
@@ -35,6 +36,7 @@ struct					s_segment
 {
 	size_t				size;
 	size_t				block_id;
+	int					empty;
 	struct s_segment	*next;
 	struct s_segment	*prev;
 };
@@ -45,7 +47,6 @@ struct					s_segment
 ** -type: its type.
 ** -size: the size in bytes of the total page memory.
 ** -pages: the memory pages returned by mmap().
-** -seg_lst: a pointer to the first segment (DEPRECATED)
 */
 typedef struct			s_memblock
 {
@@ -58,7 +59,7 @@ typedef struct			s_memblock
 	}					type;
 	size_t				size;
 	void				*pages;
-	struct s_segment	*seg_lst;
+	size_t				filled_segments_count;
 }						t_memblock;
 
 /*
@@ -142,5 +143,20 @@ size_t					align_size(size_t size);
 ** returns: 1 if address valid, 0 if not.
 */
 int						search_seg_adrr(char *addr, t_meminfo *info);
+
+/*
+** seg_frag: Fragments (cuts) a memory segment into a segment of size 'size'
+**           followed by a segment of the remaining size.
+**
+** -size: must SMALLER THAN the old segment.
+**
+** returns: 1 upon success, 0 if the old segment is too small to be fragmented.
+*/
+int						seg_frag(struct s_segment *s, size_t size);
+
+/*
+** seg_merge: Merges neighbor empty blocks toghether.
+*/
+void					seg_merge(struct s_segment *s);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: yguaye <yguaye@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/19 15:26:49 by yguaye            #+#    #+#             */
-/*   Updated: 2018/06/19 16:12:59 by yguaye           ###   ########.fr       */
+/*   Updated: 2018/06/19 19:34:46 by yguaye           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,10 +30,15 @@ static void				show_alloc_segments(t_memblock *block, size_t *total)
 	struct s_segment	*curr;
 	char				*addr;
 
-	curr = block->seg_lst;
+	curr = (struct s_segment *)block->pages;
 	while (curr)
 	{
 		addr = ((char *)curr) + sizeof(struct s_segment);
+		if (curr->empty)
+		{
+			curr = curr->next;
+			continue ;
+		}
 		print_addr_maj(addr);
 		ft_putstr(" - ");
 		print_addr_maj(addr + curr->size);

@@ -24,11 +24,12 @@ MKDIR := mkdir -p
 PRINT := printf
 NORM := norminette
 
-SRCS_NAMES :=		ft_free.c			\
-					ft_calloc.c			\
+SRCS_NAMES :=		ft_calloc.c			\
+					ft_free.c			\
 					ft_malloc.c			\
 					ft_realloc.c		\
 					interface.c			\
+					segment.c			\
 					show_alloc_mem.c	\
 					utils.c				\
 

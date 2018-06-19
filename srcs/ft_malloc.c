@@ -6,7 +6,7 @@
 /*   By: yguaye <yguaye@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/19 03:17:29 by yguaye            #+#    #+#             */
-/*   Updated: 2018/06/19 16:14:32 by yguaye           ###   ########.fr       */
+/*   Updated: 2018/06/19 19:43:21 by yguaye           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,16 +16,14 @@
 #include "libft.h"
 #include <stdio.h>
 
-static void				set_segment(struct s_segment *s, size_t size,
-		unsigned int block_id, struct s_segment **lst)
+static void				set_segment(struct s_segment **s, size_t size,
+		unsigned int block_id)
 {
-	s->size	= size;
-	s->block_id = block_id;
-	s->next = *lst;
-	s->prev = NULL;
-	if (*lst)
-		(*lst)->prev = s;
-	*lst = s;
+	(*s)->size = size;
+	(*s)->block_id = block_id;
+	(*s)->next = NULL;
+	(*s)->prev = NULL;
+	(*s)->empty = 0;
 }
 
 static int				get_next_block(t_memblock **block, size_t *id,
@@ -40,7 +38,7 @@ static int				get_next_block(t_memblock **block, size_t *id,
 		{
 			*block = &info->blocks[i];
 			*id = i;
-			(*block)->seg_lst = NULL;
+			(*block)->pages = NULL;
 			if (i >= info->curr)
 				++info->curr;
 			return (1);
@@ -56,7 +54,6 @@ static void				*ft_large_malloc(size_t block_size, size_t alloc_size,
 	t_memblock			*block;
 	size_t				id;
 
-	/*ft_putendl("[ft_malloc]: malloc type: LARGE");*/
 	if (!get_next_block(&block, &id, info))
 		return (NULL);
 	if ((block->pages = mmap(NULL, block_size, PROT_READ | PROT_WRITE,
@@ -67,11 +64,9 @@ static void				*ft_large_malloc(size_t block_size, size_t alloc_size,
 	}
 	block->type = LARGE;
 	block->size = block_size;
-	set_segment((struct s_segment *)block->pages, alloc_size,
-			id, &block->seg_lst);
-	/*ft_putstr("[ft_malloc]: segment address: ");
-	  print_addr(block->pages, 0);
-	  ft_putchar('\n');*/
+	block->filled_segments_count = 1;
+	set_segment((struct s_segment **)&block->pages, block_size, id);
+	seg_frag((struct s_segment *)block->pages, alloc_size);
 	return (((char *)block->pages) + sizeof(struct s_segment));
 }
 
