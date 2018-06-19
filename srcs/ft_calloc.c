@@ -6,7 +6,7 @@
 /*   By: yguaye <yguaye@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/19 07:52:55 by yguaye            #+#    #+#             */
-/*   Updated: 2018/06/19 09:39:21 by yguaye           ###   ########.fr       */
+/*   Updated: 2018/06/19 16:49:22 by yguaye           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,5 +15,14 @@
 void					*ft_calloc(size_t nelems, size_t size,
 		t_meminfo *info)
 {
-	return (ft_malloc(nelems * size, info));
+	unsigned char		*mem;
+	size_t				i;
+
+	if ((mem = (unsigned char *)ft_malloc(nelems * size, info)))
+	{
+		i = 0;
+		while (i < size)
+			mem[i] = 0;
+	}
+	return ((void *)mem);
 }
