@@ -6,7 +6,7 @@
 /*   By: yguaye <yguaye@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/19 03:06:40 by yguaye            #+#    #+#             */
-/*   Updated: 2018/06/19 04:51:31 by yguaye           ###   ########.fr       */
+/*   Updated: 2018/06/19 15:29:06 by yguaye           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,4 +33,9 @@ void					*realloc(void *ptr, size_t size)
 void					*calloc(size_t nelems, size_t size)
 {
 	return (ft_calloc(nelems, size, &g_meminfo));
+}
+
+void					show_alloc_mem(void)
+{
+	ft_show_alloc_mem(&g_meminfo);
 }

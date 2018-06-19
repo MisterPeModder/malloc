@@ -25,8 +25,12 @@ PRINT := printf
 NORM := norminette
 
 SRCS_NAMES :=		ft_free.c			\
+					ft_calloc.c			\
 					ft_malloc.c			\
+					ft_realloc.c		\
 					interface.c			\
+					show_alloc_mem.c	\
+					utils.c				\
 
 LIBFT_SRCS_NAMES :=	ft_memset.c			\
 					ft_bzero.c			\

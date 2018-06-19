@@ -6,7 +6,7 @@
 /*   By: yguaye <yguaye@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/19 03:07:38 by yguaye            #+#    #+#             */
-/*   Updated: 2018/06/19 04:32:14 by yguaye           ###   ########.fr       */
+/*   Updated: 2018/06/19 15:37:04 by yguaye           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,5 +62,13 @@ void					*ft_realloc(void *ptr, size_t size,
 
 void					*ft_calloc(size_t nelems, size_t size,
 		t_meminfo *info);
+
+void					ft_show_alloc_mem(t_meminfo *info);
+
+void					print_addr(const void *addr, int fd);
+
+void					print_addr_maj(const void *addr);
+
+size_t					align_size(size_t size);
 
 #endif
