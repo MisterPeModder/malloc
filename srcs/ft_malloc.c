@@ -6,7 +6,7 @@
 /*   By: yguaye <yguaye@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/19 03:17:29 by yguaye            #+#    #+#             */
-/*   Updated: 2018/06/19 19:43:21 by yguaye           ###   ########.fr       */
+/*   Updated: 2018/06/20 22:07:45 by yguaye           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ static void				*ft_large_malloc(size_t block_size, size_t alloc_size,
 	return (((char *)block->pages) + sizeof(struct s_segment));
 }
 
-void					*ft_malloc(size_t size, t_meminfo *info)
+EXPORT_VOID				*ft_malloc(size_t size, t_meminfo *info)
 {
 
 	if (size <= TINY_MAX_SIZE)

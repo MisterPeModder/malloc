@@ -6,7 +6,7 @@
 /*   By: yguaye <yguaye@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/19 03:06:40 by yguaye            #+#    #+#             */
-/*   Updated: 2018/06/19 15:29:06 by yguaye           ###   ########.fr       */
+/*   Updated: 2018/06/20 21:33:53 by yguaye           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,27 +15,27 @@
 
 static t_meminfo		g_meminfo;
 
-void					free(void *ptr)
+EXPORT_VOID				free(void *ptr)
 {
 	ft_free(ptr, &g_meminfo);
 }
 
-void					*malloc(size_t size)
+EXPORT_VOID				*malloc(size_t size)
 {
 	return (ft_malloc(size, &g_meminfo));
 }
 
-void					*realloc(void *ptr, size_t size)
+EXPORT_VOID				*realloc(void *ptr, size_t size)
 {
 	return (ft_realloc(ptr, size, &g_meminfo));
 }
 
-void					*calloc(size_t nelems, size_t size)
+EXPORT_VOID				*calloc(size_t nelems, size_t size)
 {
 	return (ft_calloc(nelems, size, &g_meminfo));
 }
 
-void					show_alloc_mem(void)
+EXPORT_VOID				show_alloc_mem(void)
 {
 	ft_show_alloc_mem(&g_meminfo);
 }

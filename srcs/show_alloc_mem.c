@@ -6,7 +6,7 @@
 /*   By: yguaye <yguaye@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/19 15:26:49 by yguaye            #+#    #+#             */
-/*   Updated: 2018/06/19 19:34:46 by yguaye           ###   ########.fr       */
+/*   Updated: 2018/06/20 22:09:56 by yguaye           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ static void				show_alloc_segments(t_memblock *block, size_t *total)
 	}
 }
 
-void					ft_show_alloc_mem(t_meminfo *info)
+EXPORT_VOID				ft_show_alloc_mem(t_meminfo *info)
 {
 	size_t				i;
 	size_t				total;

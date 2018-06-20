@@ -6,7 +6,7 @@
 /*   By: yguaye <yguaye@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/19 04:04:21 by yguaye            #+#    #+#             */
-/*   Updated: 2018/06/19 19:31:33 by yguaye           ###   ########.fr       */
+/*   Updated: 2018/06/20 22:08:06 by yguaye           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ static void				check_seg_addr(char *addr, t_meminfo *info)
 	abort();
 }
 
-void					ft_free(void *ptr,
+EXPORT_VOID				ft_free(void *ptr,
 		t_meminfo *info)
 {
 	struct s_segment	*seg;

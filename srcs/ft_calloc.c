@@ -6,13 +6,13 @@
 /*   By: yguaye <yguaye@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/19 07:52:55 by yguaye            #+#    #+#             */
-/*   Updated: 2018/06/19 16:49:22 by yguaye           ###   ########.fr       */
+/*   Updated: 2018/06/20 22:08:29 by yguaye           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_malloc_impl.h"
 
-void					*ft_calloc(size_t nelems, size_t size,
+EXPORT_VOID				*ft_calloc(size_t nelems, size_t size,
 		t_meminfo *info)
 {
 	unsigned char		*mem;

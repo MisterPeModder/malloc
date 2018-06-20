@@ -6,7 +6,7 @@
 /*   By: yguaye <yguaye@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/19 03:07:38 by yguaye            #+#    #+#             */
-/*   Updated: 2018/06/19 19:30:43 by yguaye           ###   ########.fr       */
+/*   Updated: 2018/06/20 22:06:02 by yguaye           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,5 +158,8 @@ int						seg_frag(struct s_segment *s, size_t size);
 ** seg_merge: Merges neighbor empty blocks toghether.
 */
 void					seg_merge(struct s_segment *s);
+
+#define EXPORT __attribute__ ((visibility("default")))
+#define EXPORT_VOID void EXPORT
 
 #endif
