@@ -13,8 +13,8 @@ INC_PATH := includes
 
 # Compiler flags
 CPPFLAGS := -iquote$(INC_PATH)
-CFLAGS :=	-Wall -Wextra -Werror -std=c89 -pedantic -Wmissing-prototypes \
-			-Wsign-conversion -g -fPIC -fvisibility=hidden
+CFLAGS :=	-Wall -Wextra -Werror -std=c99 -pedantic -Wmissing-prototypes \
+			-Wsign-conversion -fPIC -fvisibility=hidden
 
 # Commands
 CC := gcc
@@ -24,13 +24,9 @@ MKDIR := mkdir -p
 PRINT := printf
 NORM := norminette
 
-SRCS_NAMES :=		ft_calloc.c			\
-					ft_free.c			\
+SRCS_NAMES :=		ft_free.c			\
 					ft_malloc.c			\
-					ft_realloc.c		\
 					interface.c			\
-					segment.c			\
-					show_alloc_mem.c	\
 					utils.c				\
 
 LIBFT_SRCS_NAMES :=	ft_memset.c			\
@@ -126,6 +122,7 @@ all: $(LNK_NAME)
 
 $(LNK_NAME): $(NAME)
 	@ln -ns $(NAME) $(LNK_NAME) 2> /dev/null || true
+	@strip -x $(NAME) 2> /dev/null || true
 	@$(PRINT) "$(GREEN)done!$(RESET)\n"
 
 $(NAME): $(DIRS) $(OBJS)

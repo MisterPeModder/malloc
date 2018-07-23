@@ -6,7 +6,7 @@
 /*   By: yguaye <yguaye@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/19 03:07:38 by yguaye            #+#    #+#             */
-/*   Updated: 2018/06/20 22:06:02 by yguaye           ###   ########.fr       */
+/*   Updated: 2018/07/23 09:40:20 by yguaye           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,147 +17,70 @@
 
 # define MAX_BLOCKS 420
 
-# define TINY_MAX_SIZE 2
+# define TINY_MAX_SIZE 64
 # define TINY_ALLOC_NUM 100
-# define SMALL_MAX_SIZE 3
-# define TINY_ALLOC_NUM 100
+# define SMALL_MAX_SIZE 1024
 # define SMALL_ALLOC_NUM 100
 
+# define MCHK_INUSE 1
+# define MCHK_ALLOC 2
+
 /*
-** struct s_segment: This structure is prepended to each allocated memory.
+** t_mchunk: defines a single memory allocation's data
 **
-** -size: the segment size (not including the s_segment struct itself).
-** -block: which block this semgement is in.
-** -empty: tells wheter this block is empty.
-** -prev: a pointer to the previous segment.
-** -next: a pointer to the next segment.
+** -prev_size: size of the previous chunk
+** -size: the size of the current chuck, in bytes.
+**        Since the size has to be >= to sizeof(void *), the first two bits
+**        of this field can be set as follows:
+**
+** > MCHK_INUSE: if set, the 'prev_size' field holds data of the previous
+**               chunk, not the size. It is always set for the first allocation
+**               to prevent from accessing header data or unmapped data.
+** > MCHK_ALLOC: always set when the chunk is not free.
+**
+** -next_empty: if this chunk is free, it is set the next free block location.
+**              When there is no other free block, it is set to NULL.
+** -prev_empty: if this chunk is free, it is set the previous free block loc.
+**              When there is no other free block, it is set to NULL.
+**
+** When the chunk is in use, 'next_empty' and 'prev_empty'
+** are part of user data.
 */
-struct					s_segment
+typedef struct			s_mchunk
 {
+	size_t				prev_size;
 	size_t				size;
-	size_t				block_id;
-	int					empty;
-	struct s_segment	*next;
-	struct s_segment	*prev;
+	struct s_mchunk		*prev_empty;
+	struct s_mchunk		*next_empty;
+}						t_mchunk;
+
+enum					e_mb_type
+{
+	MEMBLOCK_TINY = 0,
+	MEMBLOCK_SMALL,
+	MEMBLOCK_LARGE
 };
 
 /*
-** t_memblock: A memory block. contains the memory pages.
-**
-** -type: its type.
-** -size: the size in bytes of the total page memory.
-** -pages: the memory pages returned by mmap().
+** t_mb_header: this structure is located in the begining of each block.
 */
-typedef struct			s_memblock
+typedef struct			s_mb_header
 {
-	enum
-	{
-		EMPTY_BLOCK,
-		TINY,
-		SMALL,
-		LARGE
-	}					type;
+	struct s_mb_header	*prev;
+	struct s_mb_header	*next;
+	t_mchunk			*empty_chunk;
 	size_t				size;
-	void				*pages;
-	size_t				filled_segments_count;
-}						t_memblock;
+	unsigned long		hash_code;
+	enum e_mb_type		type;
+}						t_mb_header;
 
-/*
-** t_meminfo: Contains the memory blocks and the current max block index.
-**
-** -curr: its value is: last_not_empty_block_index + 1
-** -blocks: the memory blocks.
-*/
-typedef struct			s_meminfo
-{
-	size_t				curr;
-	t_memblock			blocks[MAX_BLOCKS];
-}						t_meminfo;
+void					ft_free(void *ptr, t_mb_header **first);
 
-/*
-** ft_free: The implentation function of free()
-**
-** -info: a (VALID) pointer to a meminfo structure.
-*/
-void					ft_free(void *ptr,
-		t_meminfo *info);
+void					*ft_malloc(size_t size, t_mb_header **first);
 
-/*
-** ft_malloc: The implentation function of malloc()
-**
-** -info: a (VALID) pointer to a meminfo structure.
-*/
-void					*ft_malloc(size_t size,
-		t_meminfo *info);
+unsigned long			djb2_hash(const unsigned char *mem, size_t size);
 
-/*
-** ft_realloc: The implentation function of realloc()
-**
-** -info: a (VALID) pointer to a meminfo structure.
-*/
-void					*ft_realloc(void *ptr, size_t size,
-		t_meminfo *info);
-
-/*
-** ft_calloc: The implentation function of calloc()
-**
-** -info: a (VALID) pointer to a meminfo structure.
-*/
-void					*ft_calloc(size_t nelems, size_t size,
-		t_meminfo *info);
-
-/*
-** ft_show_alloc_mem: Prints the memory blocks and segments.
-**
-** -info: a (VALID) pointer to a meminfo structure.
-*/
-void					ft_show_alloc_mem(t_meminfo *info);
-
-/*
-** print_addr: Prints the passed address using lowercase hexadecimal.
-**
-** -addr: the address to be printed.
-** -fd: where this function should output.
-*/
-void					print_addr(const void *addr, int fd);
-
-/*
-** print_addr_maj: Prints the passed address using upperrcase hexadecimal.
-**                 Always prints to standard output.
-**
-** -addr: the address to be printed.
-*/
-void					print_addr_maj(const void *addr);
-
-/*
-** align_size: Returns the next upper address aligned on page boundary.
-**
-** returns: a size_t >= (size + sizeof(struct s_segment))
-*/
-size_t					align_size(size_t size);
-
-/*
-** search_seg_adrr: Verifies if the passed address corresponnds to a valid
-**                  segment address.
-**
-** returns: 1 if address valid, 0 if not.
-*/
-int						search_seg_adrr(char *addr, t_meminfo *info);
-
-/*
-** seg_frag: Fragments (cuts) a memory segment into a segment of size 'size'
-**           followed by a segment of the remaining size.
-**
-** -size: must SMALLER THAN the old segment.
-**
-** returns: 1 upon success, 0 if the old segment is too small to be fragmented.
-*/
-int						seg_frag(struct s_segment *s, size_t size);
-
-/*
-** seg_merge: Merges neighbor empty blocks toghether.
-*/
-void					seg_merge(struct s_segment *s);
+unsigned long			header_hash(const t_mb_header *h);
 
 #define EXPORT __attribute__ ((visibility("default")))
 #define EXPORT_VOID void EXPORT

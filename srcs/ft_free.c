@@ -5,45 +5,34 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: yguaye <yguaye@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/06/19 04:04:21 by yguaye            #+#    #+#             */
-/*   Updated: 2018/06/20 22:08:06 by yguaye           ###   ########.fr       */
+/*   Created: 2018/07/23 05:43:29 by yguaye            #+#    #+#             */
+/*   Updated: 2018/07/23 09:40:53 by yguaye           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <unistd.h>
 #include <stdlib.h>
-#include <sys/mman.h>
 #include "libft.h"
 #include "ft_malloc_impl.h"
 
-static void				check_seg_addr(char *addr, t_meminfo *info)
+void					ft_free(void *ptr, t_mb_header **first)
 {
-	if (search_seg_adrr(addr, info))
-		return ;
-	ft_putstr_fd("ft_malloc: *** error for object ", STDERR_FILENO);
-	print_addr(addr, STDERR_FILENO);
-	ft_putendl_fd(": pointer being freed was not allocated", STDERR_FILENO);
-	abort();
-}
-
-EXPORT_VOID				ft_free(void *ptr,
-		t_meminfo *info)
-{
-	struct s_segment	*seg;
-	t_memblock			*block;
-
-	if (ptr == NULL)
-		return ;
-	seg = (struct s_segment *)((char *)ptr - sizeof(struct s_segment));
-	check_seg_addr((char *)seg, info);
-	seg->empty = 1;
-	block = &info->blocks[seg->block_id];
-	if (--block->filled_segments_count == 0)
+	t_mb_header			*curr;
+	curr = *first;
+	while (curr)
 	{
-		block->type = EMPTY_BLOCK;
-		munmap(block->pages, block->size);
-		block->pages = NULL;
+		if (header_hash(curr) != curr->hash_code)
+		{
+			ft_putendl_fd("heap corruption detected: code 1", 2);
+			abort();
+		}
+		if (ptr > (void *)curr && (char *)ptr < ((char *)curr + curr->size))
+		{
+
+			return ;
+		}
+		curr = curr->next;
 	}
-	else
-		seg_merge(seg);
+	ft_putendl_fd("pointer being freed was not allocated!", 2);
+	abort();
 }
