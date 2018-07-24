@@ -6,30 +6,25 @@
 /*   By: yguaye <yguaye@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/23 03:44:52 by yguaye            #+#    #+#             */
-/*   Updated: 2018/07/23 09:40:31 by yguaye           ###   ########.fr       */
+/*   Updated: 2018/07/24 05:59:36 by yguaye           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <unistd.h>
+#include <stdlib.h>
 #include <sys/mman.h>
 #include "libft.h"
 #include "ft_malloc_impl.h"
-
-static inline size_t	size_align(size_t size, size_t alignment)
-{
-	if (size % alignment != 0)
-		return (alignment - size % alignment + size);
-	return (size);
-}
 
 static t_mchunk			*make_first_chunk(t_mb_header *header)
 {
 	t_mchunk			*chunk;
 
-	chunk = (t_mchunk *)((char *)header + size_align(
-				sizeof(t_mb_header), 2 * sizeof(void *)));
+	chunk = ptr_align(header, sizeof(t_mb_header), 2 * sizeof(void *));
 	chunk->size = (size_t)((char *)header + header->size
-			- (char *)&chunk->prev_empty);
+			- (char *)&chunk->prev_empty) | MCHK_INUSE;
+	chunk->prev_empty = NULL;
+	chunk->next_empty = NULL;
 	return (chunk);
 }
 
@@ -53,11 +48,10 @@ static t_mb_header		*make_block(t_mb_header **list, enum e_mb_type type,
 	t_mb_header			*header;
 
 	if (type == MEMBLOCK_TINY)
-		size = TINY_MAX_SIZE * TINY_ALLOC_NUM;
+		size = size_align(TINY_MAX_SIZE, 2 * sizeof(void *)) * TINY_ALLOC_NUM;
 	else if (type == MEMBLOCK_SMALL)
-		size = SMALL_MAX_SIZE * SMALL_ALLOC_NUM;
-	size = size_align(size_align(size, 2 * sizeof(void *)),
-			(size_t)getpagesize());
+		size = size_align(SMALL_MAX_SIZE, 2 * sizeof(void *)) * SMALL_ALLOC_NUM;
+	size = size_align(size, (size_t)getpagesize());
 	if ((header = mmap(NULL, size, PROT_READ | PROT_WRITE,
 					MAP_ANONYMOUS | MAP_PRIVATE, -1, 0)) == MAP_FAILED)
 		return (NULL);
@@ -75,11 +69,47 @@ static t_mb_header		*make_block(t_mb_header **list, enum e_mb_type type,
 	return (header);
 }
 
-void					*ft_malloc(size_t size, t_mb_header **first)
+static void				release_block(t_mb_header *curr, t_mb_header **list)
 {
+	if (curr->prev)
+		curr->prev->next = curr->next;
+	if (curr->next)
+		curr->next->prev = curr->prev;
+	if (*list == curr)
+		*list = curr->prev ? curr->prev : curr->next;
+	munmap(curr, curr->size);
+}
+
+static t_mb_header		*find_or_create_block(size_t size, t_mb_header **list)
+{
+	enum e_mb_type		type;
+	t_mb_header			*curr;
+
 	if (size > SMALL_MAX_SIZE)
+		type = MEMBLOCK_LARGE;
+	else
+		type = size > TINY_MAX_SIZE ? MEMBLOCK_SMALL : MEMBLOCK_LARGE;
+	curr = *list;
+	while (curr)
+	{
+		if (header_hash(curr) != curr->hash_code)
+		{
+			ft_putendl_fd("Malloc: heap corruption", 2);
+			abort();
+		}
+		if (type == curr->type && size <= curr->empty_chunk->size)
+			return (curr);
+		curr = curr->next;
+	}
+	return (make_block(list, type, size));
+}
+
+void					*ft_malloc(size_t size, t_mb_header **list)
+{
+	t_mb_header			*block;
+
+	if (!(block = find_or_create_block(size, list)))
 		return (NULL);
-	if (!*first)
-		*first = make_block(first, MEMBLOCK_SMALL, 0);
-	return (*first ? (*first)->empty_chunk : NULL);
+	release_block(block, list);
+	return (NULL);
 }

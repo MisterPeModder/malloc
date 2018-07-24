@@ -6,7 +6,7 @@
 /*   By: yguaye <yguaye@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/06/19 03:07:38 by yguaye            #+#    #+#             */
-/*   Updated: 2018/07/23 09:40:20 by yguaye           ###   ########.fr       */
+/*   Updated: 2018/07/24 04:45:31 by yguaye           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,9 @@
 # define SMALL_MAX_SIZE 1024
 # define SMALL_ALLOC_NUM 100
 
-# define MCHK_INUSE 1
-# define MCHK_ALLOC 2
+# define MCHK_INUSE 1u
+# define MCHK_ALLOC 2u
+# define MCHK_SMASK 3u
 
 /*
 ** t_mchunk: defines a single memory allocation's data
@@ -81,6 +82,10 @@ void					*ft_malloc(size_t size, t_mb_header **first);
 unsigned long			djb2_hash(const unsigned char *mem, size_t size);
 
 unsigned long			header_hash(const t_mb_header *h);
+
+size_t					size_align(size_t size, size_t alignment);
+
+void					*ptr_align(void *src, size_t offset, size_t alignment);
 
 #define EXPORT __attribute__ ((visibility("default")))
 #define EXPORT_VOID void EXPORT

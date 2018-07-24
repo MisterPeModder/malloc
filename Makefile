@@ -14,7 +14,7 @@ INC_PATH := includes
 # Compiler flags
 CPPFLAGS := -iquote$(INC_PATH)
 CFLAGS :=	-Wall -Wextra -Werror -std=c99 -pedantic -Wmissing-prototypes \
-			-Wsign-conversion -fPIC -fvisibility=hidden
+			-Wsign-conversion -fPIC -fvisibility=hidden -Wno-compare-distinct-pointer-types
 
 # Commands
 CC := gcc

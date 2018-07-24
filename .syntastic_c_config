@@ -1,1 +1,2 @@
 -D _GNU_SOURCE 
+-Wno-compare-distinct-pointer-types
